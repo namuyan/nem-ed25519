@@ -11,6 +11,14 @@ how to use
 -----
 Please look [test codes folder.](test)
 
+Install
+------
+```commandline
+pip install nem-ed25519
+ or
+pip install git+https://github.com/namuyan/nem-ed25519.git
+```
+
 Samples1
 ------
 ```python
