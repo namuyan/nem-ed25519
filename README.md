@@ -1,6 +1,7 @@
 nem-ed25519
 ===========
-NEM implementation ed26619 encryption modules for Python.
+NEM implementation ed26619 encryption modules for Python.  
+NEM use Keccak hash function, not same SHA3.
 
 Require
 -------
@@ -10,7 +11,7 @@ how to use
 -----
 Please look [test codes folder.](test)
 
-Samples
+Samples1
 ------
 ```python
 from nem_ed25519.key import secret_key, public_key, get_address
@@ -35,6 +36,19 @@ enc = encrypt(sk=sk, pk=pk1, msg=b'Hot potato.')
 dec = decrypt(sk=sk1, pk=pk, enc=enc)
 ```
 
+Samples2
+--------
+```python
+from nem_ed25519.base import Ed25519 as ecc
+sk = ecc.secret_key()
+pk = ecc.public_key(sk)
+ck = ecc.get_address(pk)
+ecc.is_address(ck)
+ecc.sign()
+ecc.verify()
+ecc.encrypt()
+ecc.decrypt()
+```
 
 Author
 ------
