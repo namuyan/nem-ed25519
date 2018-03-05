@@ -26,11 +26,15 @@ def public_key(sk):
     return hexlify(point_to_bytes(c)).decode()
 
 
-def get_address(pk, main_net=True):
+def get_address(pk, main_net=True, prefix=None):
     """ compute the nem-py address from the public one """
     k = sha3_256(unhexlify(pk.encode())).digest()
     ripe = RIPEMD160.new(k).digest()
-    body = (b"\x68" if main_net else b"\x98") + ripe
+    if prefix is None:
+        body = (b"\x68" if main_net else b"\x98") + ripe
+    else:
+        assert isinstance(prefix, bytes), 'Set prefix 1 bytes'
+        body = prefix + ripe
     checksum = sha3_256(body).digest()[0:4]
     return b32encode(body + checksum).decode()
 
@@ -39,3 +43,11 @@ def is_address(ck):
     raw = b32decode(ck.encode())
     header, ripe, checksum = raw[:1], raw[1:1 + 20], raw[1 + 20:]
     return checksum == sha3_256(header + ripe).digest()[0:4]
+
+
+def convert_address(ck, prefix):
+    raw = b32decode(ck.encode())
+    header, ripe, checksum = raw[:1], raw[1:1 + 20], raw[1 + 20:]
+    body = prefix + ripe
+    checksum_new = sha3_256(body).digest()[0:4]
+    return b32encode(body + checksum_new).decode()
