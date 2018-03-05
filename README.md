@@ -46,7 +46,8 @@ dec = decrypt(sk=sk1, pk=pk, enc=enc)
 
 Samples2
 --------
-Import setting at first, and you can select encode mode.
+Import setting at first, and you can select encode mode.  
+Please look at [allinone.py](test/allinone.py)
 ```python
 from nem_ed25519.base import Encryption
 ecc = Encryption()
