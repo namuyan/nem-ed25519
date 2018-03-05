@@ -46,16 +46,10 @@ dec = decrypt(sk=sk1, pk=pk, enc=enc)
 
 Samples2
 --------
+Import setting at first, and you can select encode mode.
 ```python
-from nem_ed25519.base import Ed25519 as ecc
-sk = ecc.secret_key()
-pk = ecc.public_key(sk)
-ck = ecc.get_address(pk)
-ecc.is_address(ck)
-ecc.sign()
-ecc.verify()
-ecc.encrypt()
-ecc.decrypt()
+from nem_ed25519.base import Encryption
+ecc = Encryption()
 ```
 
 Author
