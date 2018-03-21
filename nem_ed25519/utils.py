@@ -3,7 +3,7 @@
 
 from collections import namedtuple
 from operator import getitem
-from .python_sha3 import sha3_256, sha3_512
+from sha3 import keccak_256, keccak_512
 
 Point = namedtuple('Point', ['x', 'y'])
 KEY_MASK = int.from_bytes(b'\x3F' + b'\xFF' * 30 + b'\xF8', 'big', signed=False)
@@ -14,11 +14,11 @@ IDENT = (0, 1, 1, 0)
 
 
 def to_hash(m):
-    return sha3_512(m).digest()
+    return keccak_512(m).digest()
 
 
 def to_hash_sha3_256(m):
-    return sha3_256(m).digest()
+    return keccak_256(m).digest()
 
 
 def to_bytes(i):
@@ -72,7 +72,7 @@ def bit(h, i):
 
 
 def Hint_hash(m):
-    h = sha3_512(m).digest()
+    h = keccak_512(m).digest()
     return sum(2 ** i * bit(h, i) for i in range(2 * B))
 
 

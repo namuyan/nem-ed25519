@@ -16,14 +16,14 @@ def _requires_from_file(filename):
 
 setup(
     name="nem_ed25519",
-    version='0.0.3',
+    version='0.0.5',
     url='https://github.com/namuyan/nem-ed25519',
     author='namuyan',
     description='Encryption modules applied to NEM.',
     long_description=readme,
     packages=find_packages(),
     license="MIT Licence",
-    install_requires=['pycryptodomex'],
+    install_requires=['pycryptodomex', 'pysha3'],
     classifiers=[
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.5',

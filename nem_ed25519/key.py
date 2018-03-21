@@ -11,7 +11,7 @@ from base64 import b32decode, b32encode
 def secret_key(seed=None):
     if seed is None:
         seed = urandom(32)
-    assert len(seed) == 32 and isinstance(seed, bytes), 'seed is byte or None, and bytes'
+    assert isinstance(seed, bytes), 'seed is byte or None.'
     h = to_hash(seed)
     i = as_key(h)
     k = to_bytes(i)
@@ -28,26 +28,26 @@ def public_key(sk):
 
 def get_address(pk, main_net=True, prefix=None):
     """ compute the nem-py address from the public one """
-    k = sha3_256(unhexlify(pk.encode())).digest()
+    k = keccak_256(unhexlify(pk.encode())).digest()
     ripe = RIPEMD160.new(k).digest()
     if prefix is None:
         body = (b"\x68" if main_net else b"\x98") + ripe
     else:
         assert isinstance(prefix, bytes), 'Set prefix 1 bytes'
         body = prefix + ripe
-    checksum = sha3_256(body).digest()[0:4]
+    checksum = keccak_256(body).digest()[0:4]
     return b32encode(body + checksum).decode()
 
 
 def is_address(ck):
     raw = b32decode(ck.encode())
     header, ripe, checksum = raw[:1], raw[1:1 + 20], raw[1 + 20:]
-    return checksum == sha3_256(header + ripe).digest()[0:4]
+    return checksum == keccak_256(header + ripe).digest()[0:4]
 
 
 def convert_address(ck, prefix):
     raw = b32decode(ck.encode())
     header, ripe, checksum = raw[:1], raw[1:1 + 20], raw[1 + 20:]
     body = prefix + ripe
-    checksum_new = sha3_256(body).digest()[0:4]
+    checksum_new = keccak_256(body).digest()[0:4]
     return b32encode(body + checksum_new).decode()
