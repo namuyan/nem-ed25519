@@ -39,10 +39,12 @@ def get_address(pk, main_net=True, prefix=None):
     return b32encode(body + checksum).decode()
 
 
-def is_address(ck):
+def is_address(ck, prefix=None):
     raw = b32decode(ck.encode())
     header, ripe, checksum = raw[:1], raw[1:1 + 20], raw[1 + 20:]
-    return checksum == keccak_256(header + ripe).digest()[0:4]
+    f_body = (checksum == keccak_256(header + ripe).digest()[0:4])
+    f_header = (prefix is None or header == prefix)
+    return f_body and f_header
 
 
 def convert_address(ck, prefix):
