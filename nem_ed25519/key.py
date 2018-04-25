@@ -20,6 +20,7 @@ def secret_key(seed=None):
 
 def public_key(sk):
     assert isinstance(sk, str), 'SK is hex str.'
+    assert len(sk) == 64, 'SK is 32bytes, "{}"'.format(sk)
     h = to_hash(unhexlify(sk.encode())[::-1])
     k = as_key(h)
     c = outer(B_POINT, k)
@@ -28,6 +29,7 @@ def public_key(sk):
 
 def get_address(pk, main_net=True, prefix=None):
     """ compute the nem-py address from the public one """
+    assert len(pk) == 64, 'PK is 32bytes, "{}"'.format(pk)
     k = keccak_256(unhexlify(pk.encode())).digest()
     ripe = RIPEMD160.new(k).digest()
     if prefix is None:

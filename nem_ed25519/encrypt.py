@@ -9,7 +9,9 @@ from .utils import *
 
 def encrypt(sk, pk, msg):
     assert isinstance(sk, str), 'SK is hex str'
+    assert len(sk) == 64, 'SK is 32bytes, not "{}"'.format(sk)
     assert isinstance(pk, str), 'PK is hex str'
+    assert len(pk) == 64, 'PK is 32bytes, not "{}"'.format(pk)
     assert isinstance(msg, bytes), 'Msg is bytes'
     sk = unhexlify(sk.encode())[::-1]
     pk = unhexlify(pk.encode())
@@ -29,7 +31,9 @@ def encrypt(sk, pk, msg):
 
 def decrypt(sk, pk, enc):
     assert isinstance(sk, str), 'SK is hex str'
+    assert len(sk) == 64, 'SK is 32bytes, not "{}"'.format(sk)
     assert isinstance(pk, str), 'PK is hex str'
+    assert len(pk) == 64, 'PK is 32bytes, not "{}"'.format(pk)
     assert isinstance(enc, bytes), 'Enc is bytes'
     sk = unhexlify(sk.encode())[::-1]
     pk = unhexlify(pk.encode())

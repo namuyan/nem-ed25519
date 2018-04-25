@@ -16,7 +16,7 @@ def _requires_from_file(filename):
 
 setup(
     name="nem_ed25519",
-    version='0.0.6',
+    version='0.0.7',
     url='https://github.com/namuyan/nem-ed25519',
     author='namuyan',
     description='Encryption modules applied to NEM.',

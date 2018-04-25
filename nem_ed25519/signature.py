@@ -8,7 +8,9 @@ from .utils import *
 def sign(msg, sk, pk):
     assert isinstance(msg, bytes), 'Msg is bytes'
     assert isinstance(sk, str), 'SK is hex str'
+    assert len(sk) == 64, 'SK is 32bytes, not "{}"'.format(sk)
     assert isinstance(pk, str), 'PK is hex str'
+    assert len(pk) == 64, 'PK is 32bytes, not "{}"'.format(pk)
     sk = unhexlify(sk.encode())[::-1]
     pk = unhexlify(pk.encode())
 
@@ -27,6 +29,7 @@ def verify(msg, sign, pk):
     assert isinstance(msg, bytes), 'Msg is bytes'
     assert isinstance(sign, bytes), 'Sign is bytes'
     assert isinstance(pk, str), 'PK is hex str'
+    assert len(pk) == 64, 'PK is 32bytes, not "{}"'.format(pk)
     pk = unhexlify(pk.encode())
     if len(sign) != B // 4:
         raise ValueError("signature length is wrong")
