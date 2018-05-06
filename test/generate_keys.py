@@ -1,10 +1,13 @@
+from nem_ed25519.key import secret_key, public_key, get_address, dummy_address, is_address
 import time
+import cProfile
 
-from nem_ed25519.key import secret_key, public_key, get_address, is_address
 
 start = time.time()
 result = list()
 COUNT = 10
+pr = cProfile.Profile()
+pr.enable()
 for i in range(COUNT):
     sk = secret_key()
     pk = public_key(sk)
@@ -12,6 +15,7 @@ for i in range(COUNT):
     if not is_address(ck):
         raise Exception('not correct key')
     result.append((sk, pk, ck))
+pr.disable()
 print((time.time()-start) * 1000 // COUNT, "mS/create_pair")
 
 print("\ntry check")
@@ -21,3 +25,7 @@ ck = 'NBOGOGSENUPBFMAPTGHVI4UIAQPVSNKJLWUVHBED'
 assert pk == public_key(sk), 'Not correct sk'
 assert ck == get_address(pk), 'Not correct pk'
 print("all ok.")
+
+address = dummy_address('NAMUYAN')
+print("dummy address", address, is_address(address))
+pr.print_stats()

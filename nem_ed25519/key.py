@@ -41,6 +41,13 @@ def get_address(pk, main_net=True, prefix=None):
     return b32encode(body + checksum).decode()
 
 
+def dummy_address(startwith, padding=b'\x00'):
+    dummy_body = b32decode(startwith + '=' * (8 - len(startwith) % 8))
+    body = dummy_body + padding * (21 - len(dummy_body))
+    checksum = keccak_256(body).digest()[0:4]
+    return b32encode(body + checksum).decode()
+
+
 def is_address(ck, prefix=None):
     raw = b32decode(ck.encode())
     header, ripe, checksum = raw[:1], raw[1:1 + 20], raw[1 + 20:]
