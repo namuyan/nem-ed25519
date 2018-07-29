@@ -56,7 +56,7 @@ def inner(P, Q):
     return Point(x % PRIME, y % PRIME)
 
 
-def outer(P, n):
+def outer_old(P, n):
     """ outer product on the curve, between a point and a scalar """
     if n == 0:
         return Point(0, 1)
@@ -65,6 +65,25 @@ def outer(P, n):
     if n & 1:
         Q = inner(P=Q, Q=P)
     return Q
+
+
+def outer(P, n):
+    def _inner(px, py, qx, qy):
+        x = (px * qy + qx * py) * pow(1 + D * px * qx * py * qy, PRIME - 2, PRIME)
+        y = (py * qy + px * qx) * pow(1 - D * px * qx * py * qy, PRIME - 2, PRIME)
+        return x % PRIME, y % PRIME
+
+    def _outer(px, py, _n):
+        if _n == 0:
+            return 0, 1
+        qx, qy = _outer(px, py, _n // 2)
+        qx, qy = _inner(qx, qy, qx, qy)
+        if _n & 1:
+            qx, qy = _inner(qx, qy, px, py)
+        return qx, qy
+
+    _qx, _qy = _outer(P.x, P.y, n)
+    return Point(_qx, _qy)
 
 
 def bit(h, i):
