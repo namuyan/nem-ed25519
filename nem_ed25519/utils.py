@@ -4,6 +4,7 @@
 from collections import namedtuple
 from operator import getitem
 from sha3 import keccak_256, keccak_512
+from nem_ed25519.outer import outer
 
 Point = namedtuple('Point', ['x', 'y'])
 KEY_MASK = int.from_bytes(b'\x3F' + b'\xFF' * 30 + b'\xF8', 'big', signed=False)
@@ -47,43 +48,6 @@ def inverse(x):
 
 
 D = -121665 * inverse(121666) % PRIME
-
-
-def inner(P, Q):
-    """ inner product on the curve, between two points """
-    x = (P.x * Q.y + Q.x * P.y) * inverse(1 + D * P.x * Q.x * P.y * Q.y)
-    y = (P.y * Q.y + P.x * Q.x) * inverse(1 - D * P.x * Q.x * P.y * Q.y)
-    return Point(x % PRIME, y % PRIME)
-
-
-def outer_old(P, n):
-    """ outer product on the curve, between a point and a scalar """
-    if n == 0:
-        return Point(0, 1)
-    Q = outer(P=P, n=n // 2)
-    Q = inner(P=Q, Q=Q)
-    if n & 1:
-        Q = inner(P=Q, Q=P)
-    return Q
-
-
-def outer(P, n):
-    def _inner(px, py, qx, qy):
-        x = (px * qy + qx * py) * pow(1 + D * px * qx * py * qy, PRIME - 2, PRIME)
-        y = (py * qy + px * qx) * pow(1 - D * px * qx * py * qy, PRIME - 2, PRIME)
-        return x % PRIME, y % PRIME
-
-    def _outer(px, py, _n):
-        if _n == 0:
-            return 0, 1
-        qx, qy = _outer(px, py, _n // 2)
-        qx, qy = _inner(qx, qy, qx, qy)
-        if _n & 1:
-            qx, qy = _inner(qx, qy, px, py)
-        return qx, qy
-
-    _qx, _qy = _outer(P.x, P.y, n)
-    return Point(_qx, _qy)
 
 
 def bit(h, i):
