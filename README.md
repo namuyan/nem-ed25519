@@ -19,6 +19,14 @@ pip install nem-ed25519
 pip install git+https://github.com/namuyan/nem-ed25519.git
 ```
 
+This version need GMP.  
+*For Linux*  
+`apt-get install python3-gmpy2`  
+  
+*For windows*  
+Download [pythonlibs](from https://www.lfd.uci.edu/~gohlke/pythonlibs/#gmpy)  
+`pip install gmpy2‑2.0.8‑cp36‑cp36m‑win_amd64.whl` If you use Python3.5 64bit
+
 Samples1
 ------
 ```python

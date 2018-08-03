@@ -23,7 +23,7 @@ setup(
     long_description=readme,
     packages=find_packages(),
     license="MIT Licence",
-    install_requires=['pycryptodomex', 'pysha3'],
+    install_requires=['pycryptodomex', 'pysha3', 'gmpy2'],
     classifiers=[
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.5',
