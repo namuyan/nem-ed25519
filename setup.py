@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 
 try:
-    with open('README.md') as f:
+    with open('README.md', encoding='utf8') as f:
         readme = f.read()
 except IOError:
     readme = ''
@@ -16,7 +16,7 @@ def _requires_from_file(filename):
 
 setup(
     name="nem_ed25519",
-    version='0.0.8',
+    version='0.0.9',
     url='https://github.com/namuyan/nem-ed25519',
     author='namuyan',
     description='Encryption modules applied to NEM.',
