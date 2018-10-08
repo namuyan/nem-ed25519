@@ -35,7 +35,7 @@ def main(cores=3):
             exit(0)
         elif data[1] == 0:
             count += data[2]
-            print("{}, {}mS/cycle".format(count, (time.time()-start)*1000//count))
+            print("{}, {}mS/cycle".format(count, round((time.time()-start)*1000/count, 3)))
         else:
             count += data[2]
 

@@ -9,9 +9,9 @@ from gmpy2 import powmod, qdiv
 Point = namedtuple('Point', ['x', 'y'])
 KEY_MASK = int.from_bytes(b'\x3F' + b'\xFF' * 30 + b'\xF8', 'big', signed=False)
 B = 256
-PRIME = 2 ** 255 - 19
-L = 2 ** 252 + 27742317777372353535851937790883648493
-IDENT = (0, 1, 1, 0)
+PRIME = qdiv(2 ** 255 - 19)
+L = qdiv(2 ** 252 + 27742317777372353535851937790883648493)
+IDENT = (qdiv(0), qdiv(1), qdiv(1), qdiv(0))
 
 
 def to_hash(m):
@@ -32,7 +32,7 @@ def from_bytes(h):
 
 
 def int2byte(i):
-    return i.to_bytes(1, "big")
+    return int(i).to_bytes(1, "big")
 
 
 def as_key(h):
@@ -44,7 +44,7 @@ def point_to_bytes(P):
 
 
 def inverse(x):
-    return pow(x, PRIME - 2, PRIME)
+    return powmod(x, PRIME - 2, PRIME)
 
 
 D = -121665 * inverse(121666) % PRIME
@@ -92,8 +92,8 @@ def Hint_hash(m):
 def edwards_add(P, Q):
     # This is formula sequence 'addition-add-2008-hwcd-3' from
     # http://www.hyperelliptic.org/EFD/g1p/auto-twisted-extended-1.html
-    (x1, y1, z1, t1) = P
-    (x2, y2, z2, t2) = Q
+    x1, y1, z1, t1 = P
+    x2, y2, z2, t2 = Q
 
     a = (y1 - x1) * (y2 - x2) % PRIME
     b = (y1 + x1) * (y2 + x2) % PRIME
@@ -113,7 +113,7 @@ def edwards_add(P, Q):
 def edwards_double(P):
     # This is formula sequence 'dbl-2008-hwcd' from
     # http://www.hyperelliptic.org/EFD/g1p/auto-twisted-extended-1.html
-    (x1, y1, z1, t1) = P
+    x1, y1, z1, t1 = P
 
     a = x1 * x1 % PRIME
     b = y1 * y1 % PRIME
@@ -132,10 +132,11 @@ def edwards_double(P):
 
 def pow2(x, p):
     """== pow(x, 2**p, q)"""
-    while p > 0:
-        x = x * x % PRIME
-        p -= 1
-    return x
+    return powmod(x, 2**p, PRIME)
+    # while p > 0:
+    #    x = x * x % PRIME
+    #    p -= 1
+    # return x
 
 
 def inv(z):
@@ -157,10 +158,10 @@ def inv(z):
 
 def xrecover(y):
     xx = (y * y - 1) * inv(D * y * y + 1)
-    x = pow(xx, (PRIME + 3) // 8, PRIME)
+    x = powmod(xx, (PRIME + 3) // 8, PRIME)
 
     if (x * x - xx) % PRIME != 0:
-        I = pow(2, (PRIME - 1) // 4, PRIME)
+        I = powmod(2, (PRIME - 1) // 4, PRIME)
         x = (x * I) % PRIME
 
     if x % 2 != 0:
@@ -235,7 +236,9 @@ def encodeint(y):
 
 
 def decodepoint(s):
+    # bytes to Point
     y = sum(2 ** i * bit(s, i) for i in range(0, B - 1))
+    y = qdiv(y)
     x = xrecover(y)
     if x & 1 != bit(s, B - 1):
         x = PRIME - x
@@ -262,9 +265,9 @@ def unpad(s):
 def recover(y):
     """ given a value y, recover the preimage x """
     p = (y * y - 1) * inverse(D * y * y + 1)
-    x = pow(p, (PRIME + 3) // 8, PRIME)
+    x = powmod(p, (PRIME + 3) // 8, PRIME)
     if (x * x - p) % PRIME != 0:
-        i = pow(2, (PRIME - 1) // 4, PRIME)
+        i = powmod(2, (PRIME - 1) // 4, PRIME)
         x = (x * i) % PRIME
     if x % 2 != 0:
         x = PRIME - x

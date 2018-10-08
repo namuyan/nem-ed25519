@@ -43,8 +43,8 @@ def verify(msg, sign, pk):
         S = decodeint(sign[B // 8:B // 4])
         h = Hint_hash(encodepoint(R) + pk + msg)
 
-        (x1, y1, z1, t1) = P = scalarmult_B(S)
-        (x2, y2, z2, t2) = Q = edwards_add(R, scalarmult(A, h))
+        x1, y1, z1, t1 = P = scalarmult_B(S)
+        x2, y2, z2, t2 = Q = edwards_add(R, scalarmult(A, h))
 
         f_P_on = not isoncurve(P)
         f_Q_on = not isoncurve(Q)

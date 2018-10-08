@@ -13,18 +13,24 @@ from .key import secret_key, public_key, get_address, is_address
 from .encrypt import encrypt, decrypt
 from .signature import sign, verify
 import base64
-import binascii
+from binascii import hexlify, unhexlify, Error
 
 
 def encoding(data, encode):
-    if encode == 'raw':
+    if encode is bytes:
+        return data
+    elif encode is str:
+        return hexlify(data).decode()
+    elif encode is base64:
+        return base64.b64encode(data).decode()
+    elif encode == 'raw':
         return data
     elif encode == 'base64':
         return base64.b64encode(data).decode()
     elif encode == 'hex':
-        return binascii.hexlify(data).decode()
+        return hexlify(data).decode()
     else:
-        raise TypeError('encode is \"raw\" or \"base64\" or \"hex\"')
+        raise TypeError('encode is \"bytes\" or \"base64\" or \"str\"')
 
 
 def decoding(data):
@@ -32,8 +38,8 @@ def decoding(data):
         return data
     try:
         return base64.b64decode(data.encode(), validate=True)
-    except (binascii.Error, UnicodeDecodeError):
-        return binascii.unhexlify(data.encode())
+    except (Error, UnicodeDecodeError):
+        return unhexlify(data.encode())
 
 
 class Encryption:
@@ -59,13 +65,13 @@ class Encryption:
     def is_address(self, ck=None):
         return is_address(ck if ck else self.ck)
 
-    def sign(self, msg, encode='hex'):
+    def sign(self, msg, encode=str):
         return encoding(sign(msg, self.sk, self.pk), encode)
 
     def verify(self, msg, signature):
         verify(msg, decoding(signature), pk=self.pk)
 
-    def encrypt(self, recipient_pk, msg, encode='hex'):
+    def encrypt(self, recipient_pk, msg, encode=str):
         return encoding(encrypt(self.sk, recipient_pk, msg), encode)
 
     def decrypt(self, sender_pk, enc):
