@@ -23,7 +23,7 @@ def to_hash_sha3_256(m):
 
 
 def to_bytes(i):
-        return i.to_bytes(B // 8, 'little', signed=False)
+    return i.to_bytes(B // 8, 'little', signed=False)
 
 
 def from_bytes(h):
@@ -86,7 +86,9 @@ def bit(h, i):
 
 def Hint_hash(m):
     h = keccak_512(m).digest()
-    return sum(2 ** i * bit(h, i) for i in range(2 * B))
+    # return sum(2 ** i * bit(h, i) for i in range(2 * B))
+    # sum(2 ** i * bit(h, i) for i in range(0, 512)) == int.from_bytes(h, 'little')
+    return int.from_bytes(h, 'little')
 
 
 def edwards_add(P, Q):
@@ -220,24 +222,29 @@ def encodepoint(P):
     zi = inv(z)
     x = (x * zi) % PRIME
     y = (y * zi) % PRIME
-    bits = [(y >> i) & 1 for i in range(B - 1)] + [x & 1]
-    return b''.join([
-            int2byte(sum([bits[i * 8 + j] << j for j in range(8)]))
-            for i in range(B // 8)
-        ])
+    if x & 1 == 1:
+        y += 2**255
+    return int(y).to_bytes(B//8, 'little')
+    # bits = [(y >> i) & 1 for i in range(B - 1)] + [x & 1]
+    # return b''.join([
+    #        int2byte(sum([bits[i * 8 + j] << j for j in range(8)]))
+    #        for i in range(B // 8)
+    #    ])
 
 
 def encodeint(y):
-    bits = [(y >> i) & 1 for i in range(B)]
-    return b''.join([
-            int2byte(sum([bits[i * 8 + j] << j for j in range(8)]))
-            for i in range(B // 8)
-        ])
+    return int(y).to_bytes(B//8, 'little')
+    # bits = [(y >> i) & 1 for i in range(B)]
+    # return b''.join([
+    #        int2byte(sum([bits[i * 8 + j] << j for j in range(8)]))
+    #        for i in range(B // 8)
+    #    ])
 
 
 def decodepoint(s):
     # bytes to Point
-    y = sum(2 ** i * bit(s, i) for i in range(0, B - 1))
+    # y = sum(2 ** i * bit(s, i) for i in range(0, B - 1))
+    y = decodeint(s) - 2 ** 255 * bit(s, 255)
     y = qdiv(y)
     x = xrecover(y)
     if x & 1 != bit(s, B - 1):
@@ -249,7 +256,8 @@ def decodepoint(s):
 
 
 def decodeint(s):
-    return sum(2 ** i * bit(s, i) for i in range(0, B))
+    # return sum(2 ** i * bit(s, i) for i in range(0, B))
+    return int.from_bytes(s[:B], 'little')
 
 
 def pad(s):
