@@ -15,7 +15,9 @@ def sign(msg, sk, pk):
     pk = unhexlify(pk.encode())
 
     h = to_hash(sk)
-    a = 2 ** (B - 2) + sum(2 ** i * bit(h, i) for i in range(3, B - 2))
+    # a = 2 ** (B - 2) + sum(2 ** i * bit(h, i) for i in range(3, B - 2))
+    a = 2 ** (B - 2) + int.from_bytes(h[:B//8], 'little')
+    a -= sum(2 ** i * bit(h, i) for i in (0, 1, 2, B-2, B-1))
 
     m_raw = bytes([getitem(h, j) for j in range(B // 8, B // 4)]) + msg
     r = Hint_hash(m_raw)
@@ -43,8 +45,8 @@ def verify(msg, sign, pk):
         S = decodeint(sign[B // 8:B // 4])
         h = Hint_hash(encodepoint(R) + pk + msg)
 
-        (x1, y1, z1, t1) = P = scalarmult_B(S)
-        (x2, y2, z2, t2) = Q = edwards_add(R, scalarmult(A, h))
+        x1, y1, z1, t1 = P = scalarmult_B(S)
+        x2, y2, z2, t2 = Q = edwards_add(R, scalarmult(A, h))
 
         f_P_on = not isoncurve(P)
         f_Q_on = not isoncurve(Q)

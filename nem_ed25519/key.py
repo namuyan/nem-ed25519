@@ -8,29 +8,40 @@ from Cryptodome.Hash import RIPEMD160
 from base64 import b32decode, b32encode
 
 
-def secret_key(seed=None):
+def encoder(data, encode):
+    if encode is str:
+        return hexlify(data).decode()
+    else:
+        return data
+
+
+def secret_key(seed=None, encode=str):
     if seed is None:
         seed = urandom(32)
     assert isinstance(seed, bytes), 'seed is byte or None.'
     h = to_hash(seed)
     i = as_key(h)
     k = to_bytes(i)
-    return hexlify(k).decode()
+    return encoder(data=k, encode=encode)
 
 
-def public_key(sk):
-    assert isinstance(sk, str), 'SK is hex str.'
-    assert len(sk) == 64, 'SK is 32bytes, "{}"'.format(sk)
-    h = to_hash(unhexlify(sk.encode())[::-1])
+def public_key(sk, encode=str):
+    if isinstance(sk, str):
+        sk = unhexlify(sk.encode())
+    assert len(sk) == 32, 'SK is 32bytes. {}'.format(len(sk))
+    h = to_hash(sk[::-1])
     k = as_key(h)
     c = outer(B_POINT, k)
-    return hexlify(point_to_bytes(c)).decode()
+    p = point_to_bytes(c)
+    return encoder(data=p, encode=encode)
 
 
 def get_address(pk, main_net=True, prefix=None):
     """ compute the nem-py address from the public one """
-    assert len(pk) == 64, 'PK is 32bytes, "{}"'.format(pk)
-    k = keccak_256(unhexlify(pk.encode())).digest()
+    if isinstance(pk, str):
+        pk = unhexlify(pk.encode())
+    assert len(pk) == 32, 'PK is 32bytes {}'.format(len(pk))
+    k = keccak_256(pk).digest()
     ripe = RIPEMD160.new(k).digest()
     if prefix is None:
         body = (b"\x68" if main_net else b"\x98") + ripe
