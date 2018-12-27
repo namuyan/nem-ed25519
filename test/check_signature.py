@@ -25,4 +25,4 @@ pr.disable()
 print(round((time()-start)*1000/COUNT, 3), 'mS/sign&verify')
 pr.print_stats()
 
-# before 11.52 mS/sign&verify
+# before 3.85 mS/sign&verify
