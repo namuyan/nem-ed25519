@@ -15,7 +15,9 @@ def sign(msg, sk, pk):
     pk = unhexlify(pk.encode())
 
     h = to_hash(sk)
-    a = 2 ** (B - 2) + sum(2 ** i * bit(h, i) for i in range(3, B - 2))
+    # a = 2 ** (B - 2) + sum(2 ** i * bit(h, i) for i in range(3, B - 2))
+    a = 2 ** (B - 2) + int.from_bytes(h[:B//8], 'little')
+    a -= sum(2 ** i * bit(h, i) for i in (0, 1, 2, B-2, B-1))
 
     m_raw = bytes([getitem(h, j) for j in range(B // 8, B // 4)]) + msg
     r = Hint_hash(m_raw)

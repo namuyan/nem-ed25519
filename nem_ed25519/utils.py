@@ -117,11 +117,11 @@ def edwards_double(P):
     # http://www.hyperelliptic.org/EFD/g1p/auto-twisted-extended-1.html
     x1, y1, z1, t1 = P
 
-    a = x1 * x1 % PRIME
-    b = y1 * y1 % PRIME
-    c = 2 * z1 * z1 % PRIME
+    a = x1 ** 2 % PRIME
+    b = y1 ** 2 % PRIME
+    c = 2 * (z1 ** 2) % PRIME
     # dd = -a
-    e = ((x1 + y1) * (x1 + y1) - a - b) % PRIME
+    e = ((x1 + y1) ** 2 - a - b) % PRIME
     g = -a + b  # dd + b
     f = g - c
     h = -a - b  # dd - b
@@ -144,6 +144,7 @@ def pow2(x, p):
 def inv(z):
     """$= z^{-1} \mod q$, for z != 0"""
     # Adapted from curve25519_athlon.c in djb's Curve25519.
+    z = qdiv(z)
     z2 = z * z % PRIME  # 2
     z9 = pow2(z2, 2) * z % PRIME  # 9
     z11 = z9 * z2 % PRIME  # 11
@@ -174,7 +175,7 @@ def xrecover(y):
 def make_Bpow():
     By = 4 * inv(5)
     Bx = xrecover(By)
-    P = (Bx % PRIME, By % PRIME, 1, (Bx * By) % PRIME)
+    P = (Bx % PRIME, By % PRIME, qdiv(1), (Bx * By) % PRIME)
     Bpow = list()
     for i in range(253):
         Bpow.append(P)
@@ -249,7 +250,7 @@ def decodepoint(s):
     x = xrecover(y)
     if x & 1 != bit(s, B - 1):
         x = PRIME - x
-    P = (x, y, 1, (x * y) % PRIME)
+    P = (x, y, qdiv(1), (x * y) % PRIME)
     if not isoncurve(P):
         raise ValueError("decoding point that is not on curve")
     return P
