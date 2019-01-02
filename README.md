@@ -1,4 +1,4 @@
-nem-ed25519
+nem-ed25519 (pypy3 version)
 ===========
 NEM implementation ed26619 encryption modules for Python.  
 NEM use Keccak hash function, not same SHA3.
@@ -19,17 +19,12 @@ pip install nem-ed25519
 pip install git+https://github.com/namuyan/nem-ed25519.git
 ```
 
-This version need GMP.  
-*For Linux*  
-```
-apt-get install python3-gmpy2 libgmp3-dev libmpc-dev
-apt install libmpfr-dev
-pip install gmpy2
-```  
-  
-*For windows*  
-Download [pythonlibs](https://www.lfd.uci.edu/~gohlke/pythonlibs/#gmpy)  
-`pip install gmpy2‑2.0.8‑cp36‑cp36m‑win_amd64.whl` If you use Python3.6 64bit
+setup
+----
+**Only work on Linux!**
+* `pyp3 install --user pycryptodomex`
+* `pyp3 install --user git+https://github.com/jameshilliard/pysha3@pypy3`
+* `pyp3 install --user gmpy_cffi`
 
 Samples1
 ------
