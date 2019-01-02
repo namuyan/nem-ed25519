@@ -11,8 +11,15 @@ except IOError:
     readme = ''
 
 
-def _requires_from_file(filename):
-    return open(filename).read().splitlines()
+install_requires = [
+    'pycryptodomex',
+    'git+https://github.com/jameshilliard/pysha3@pypy3'
+]
+
+# for pypy3
+# git+https://github.com/jameshilliard/pysha3@pypy3
+# gmpy_cffi
+
 
 setup(
     name="nem_ed25519",
@@ -23,7 +30,7 @@ setup(
     long_description=readme,
     packages=find_packages(),
     license="MIT Licence",
-    install_requires=['pycryptodomex', 'pysha3', 'gmpy2'],
+    install_requires=install_requires,
     classifiers=[
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.5',

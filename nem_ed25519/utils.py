@@ -4,7 +4,8 @@
 from collections import namedtuple
 from operator import getitem
 from sha3 import keccak_256, keccak_512
-from gmpy2 import powmod, qdiv
+
+qdiv = int
 
 Point = namedtuple('Point', ['x', 'y'])
 KEY_MASK = int.from_bytes(b'\x3F' + b'\xFF' * 30 + b'\xF8', 'big', signed=False)
@@ -44,7 +45,7 @@ def point_to_bytes(P):
 
 
 def inverse(x):
-    return powmod(x, PRIME - 2, PRIME)
+    return pow(x, PRIME - 2, PRIME)
 
 
 D = -121665 * inverse(121666) % PRIME
@@ -60,8 +61,8 @@ num_prime_minus_2 = qdiv(PRIME - 2)
 def _inner(px, py, qx, qy):
     base_x = num_1 + num_d * px * qx * py * qy
     base_y = num_1 - num_d * px * qx * py * qy
-    x = (px * qy + qx * py) * powmod(base_x, num_prime_minus_2, num_prime)
-    y = (py * qy + px * qx) * powmod(base_y, num_prime_minus_2, num_prime)
+    x = (px * qy + qx * py) * pow(base_x, num_prime_minus_2, num_prime)
+    y = (py * qy + px * qx) * pow(base_y, num_prime_minus_2, num_prime)
     return x % PRIME, y % PRIME
 
 
@@ -134,7 +135,7 @@ def edwards_double(P):
 
 def pow2(x, p):
     """== pow(x, 2**p, q)"""
-    return powmod(x, 2**p, PRIME)
+    return pow(x, 2**p, PRIME)
     # while p > 0:
     #    x = x * x % PRIME
     #    p -= 1
@@ -161,10 +162,10 @@ def inv(z):
 
 def xrecover(y):
     xx = (y * y - 1) * inv(D * y * y + 1)
-    x = powmod(xx, (PRIME + 3) // 8, PRIME)
+    x = pow(xx, (PRIME + 3) // 8, PRIME)
 
     if (x * x - xx) % PRIME != 0:
-        I = powmod(2, (PRIME - 1) // 4, PRIME)
+        I = pow(2, (PRIME - 1) // 4, PRIME)
         x = (x * I) % PRIME
 
     if x % 2 != 0:
@@ -274,9 +275,9 @@ def unpad(s):
 def recover(y):
     """ given a value y, recover the preimage x """
     p = (y * y - 1) * inverse(D * y * y + 1)
-    x = powmod(p, (PRIME + 3) // 8, PRIME)
+    x = pow(p, (PRIME + 3) // 8, PRIME)
     if (x * x - p) % PRIME != 0:
-        i = powmod(2, (PRIME - 1) // 4, PRIME)
+        i = pow(2, (PRIME - 1) // 4, PRIME)
         x = (x * i) % PRIME
     if x % 2 != 0:
         x = PRIME - x
