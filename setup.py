@@ -13,7 +13,8 @@ except IOError:
 
 install_requires = [
     'pycryptodomex',
-    'git+https://github.com/jameshilliard/pysha3@pypy3'
+    'git+https://github.com/jameshilliard/pysha3@pypy3',
+    'gmpy_cffi'
 ]
 
 # for pypy3

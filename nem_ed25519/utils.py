@@ -4,15 +4,14 @@
 from collections import namedtuple
 from operator import getitem
 from sha3 import keccak_256, keccak_512
-
-qdiv = int
+from gmpy_cffi import mpz
 
 Point = namedtuple('Point', ['x', 'y'])
 KEY_MASK = int.from_bytes(b'\x3F' + b'\xFF' * 30 + b'\xF8', 'big', signed=False)
-B = 256
-PRIME = qdiv(2 ** 255 - 19)
-L = qdiv(2 ** 252 + 27742317777372353535851937790883648493)
-IDENT = (qdiv(0), qdiv(1), qdiv(1), qdiv(0))
+B = mpz(256)
+PRIME = mpz(2 ** 255 - 19)
+L = mpz(2 ** 252 + 27742317777372353535851937790883648493)
+IDENT = (mpz(0), mpz(1), mpz(1), mpz(0))
 
 
 def to_hash(m):
@@ -44,18 +43,19 @@ def point_to_bytes(P):
     return (P.y + ((P.x & 1) << 255)).to_bytes(B // 8, 'little')
 
 
+num_prime = mpz(PRIME)
+num_prime_minus_2 = mpz(PRIME - 2)
+
+
 def inverse(x):
-    return pow(x, PRIME - 2, PRIME)
+    return pow(x, num_prime_minus_2, num_prime)
 
 
-D = -121665 * inverse(121666) % PRIME
-
-num_minus_1 = qdiv(-1)
-num_0 = qdiv(0)
-num_1 = qdiv(1)
-num_d = qdiv(D)
-num_prime = qdiv(PRIME)
-num_prime_minus_2 = qdiv(PRIME - 2)
+D = -121665 * inverse(mpz(121666)) % PRIME
+num_minus_1 = mpz(-1)
+num_0 = mpz(0)
+num_1 = mpz(1)
+num_d = mpz(D)
 
 
 def _inner(px, py, qx, qy):
@@ -77,8 +77,8 @@ def _outer(px, py, n):
 
 
 def outer(P, n):
-    qx, qy = _outer(qdiv(P.x), qdiv(P.y), qdiv(n))
-    return Point(int(qx.digits()), int(qy.digits()))
+    qx, qy = _outer(mpz(P.x), mpz(P.y), mpz(n))
+    return Point(int(qx), int(qy))
 
 
 def bit(h, i):
@@ -145,7 +145,7 @@ def pow2(x, p):
 def inv(z):
     """$= z^{-1} \mod q$, for z != 0"""
     # Adapted from curve25519_athlon.c in djb's Curve25519.
-    z = qdiv(z)
+    z = mpz(z)
     z2 = z * z % PRIME  # 2
     z9 = pow2(z2, 2) * z % PRIME  # 9
     z11 = z9 * z2 % PRIME  # 11
@@ -165,7 +165,7 @@ def xrecover(y):
     x = pow(xx, (PRIME + 3) // 8, PRIME)
 
     if (x * x - xx) % PRIME != 0:
-        I = pow(2, (PRIME - 1) // 4, PRIME)
+        I = pow(mpz(2), (PRIME - 1) // 4, PRIME)
         x = (x * I) % PRIME
 
     if x % 2 != 0:
@@ -176,7 +176,7 @@ def xrecover(y):
 def make_Bpow():
     By = 4 * inv(5)
     Bx = xrecover(By)
-    P = (Bx % PRIME, By % PRIME, qdiv(1), (Bx * By) % PRIME)
+    P = (Bx % PRIME, By % PRIME, num_1, (Bx * By) % PRIME)
     Bpow = list()
     for i in range(253):
         Bpow.append(P)
@@ -247,11 +247,11 @@ def decodepoint(s):
     # bytes to Point
     # y = sum(2 ** i * bit(s, i) for i in range(0, B - 1))
     y = decodeint(s) - 2 ** 255 * bit(s, 255)
-    y = qdiv(y)
+    y = mpz(y)
     x = xrecover(y)
     if x & 1 != bit(s, B - 1):
         x = PRIME - x
-    P = (x, y, qdiv(1), (x * y) % PRIME)
+    P = (x, y, mpz(1), (x * y) % PRIME)
     if not isoncurve(P):
         raise ValueError("decoding point that is not on curve")
     return P
@@ -277,7 +277,7 @@ def recover(y):
     p = (y * y - 1) * inverse(D * y * y + 1)
     x = pow(p, (PRIME + 3) // 8, PRIME)
     if (x * x - p) % PRIME != 0:
-        i = pow(2, (PRIME - 1) // 4, PRIME)
+        i = pow(mpz(2), (PRIME - 1) // 4, PRIME)
         x = (x * i) % PRIME
     if x % 2 != 0:
         x = PRIME - x
@@ -289,4 +289,4 @@ def point(y):
     return Point(recover(y) % PRIME, y % PRIME)
 
 
-B_POINT = point(4 * inverse(5))
+B_POINT = point(4 * inverse(mpz(5)))
