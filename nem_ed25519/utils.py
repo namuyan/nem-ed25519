@@ -52,16 +52,15 @@ D = -121665 * inverse(121666) % PRIME
 num_minus_1 = qdiv(-1)
 num_0 = qdiv(0)
 num_1 = qdiv(1)
+num_2 = qdiv(2)
 num_d = qdiv(D)
-num_prime = qdiv(PRIME)
-num_prime_minus_2 = qdiv(PRIME - 2)
 
 
 def _inner(px, py, qx, qy):
     base_x = num_1 + num_d * px * qx * py * qy
     base_y = num_1 - num_d * px * qx * py * qy
-    x = (px * qy + qx * py) * powmod(base_x, num_prime_minus_2, num_prime)
-    y = (py * qy + px * qx) * powmod(base_y, num_prime_minus_2, num_prime)
+    x = (px * qy + qx * py) * inverse(base_x)
+    y = (py * qy + px * qx) * inverse(base_y)
     return x % PRIME, y % PRIME
 
 
@@ -97,14 +96,16 @@ def edwards_add(P, Q):
     x1, y1, z1, t1 = P
     x2, y2, z2, t2 = Q
 
-    a = (y1 - x1) * (y2 - x2) % PRIME
-    b = (y1 + x1) * (y2 + x2) % PRIME
-    c = t1 * 2 * D * t2 % PRIME
-    dd = z1 * 2 * z2 % PRIME
-    e = b - a
+    # a = (y1 - x1) * (y2 - x2) % PRIME
+    # b = (y1 + x1) * (y2 + x2) % PRIME
+    c = t1 * num_2 * D * t2 % PRIME
+    dd = z1 * num_2 * z2 % PRIME
+    # e = b - a
+    e = num_2 * (y1*x2 + x1*y2) % PRIME
     f = dd - c
     g = dd + c
-    h = b + a
+    # h = b + a
+    h = num_2 * (y1*y2 + x1*x2) % PRIME
     x3 = e * f
     y3 = g * h
     t3 = e * h
@@ -117,11 +118,11 @@ def edwards_double(P):
     # http://www.hyperelliptic.org/EFD/g1p/auto-twisted-extended-1.html
     x1, y1, z1, t1 = P
 
-    a = x1 ** 2 % PRIME
-    b = y1 ** 2 % PRIME
-    c = 2 * (z1 ** 2) % PRIME
+    a = x1 ** num_2 % PRIME
+    b = y1 ** num_2 % PRIME
+    c = num_2 * (z1 ** num_2) % PRIME
     # dd = -a
-    e = ((x1 + y1) ** 2 - a - b) % PRIME
+    e = ((x1 + y1) ** num_2 - a - b) % PRIME
     g = -a + b  # dd + b
     f = g - c
     h = -a - b  # dd - b
@@ -179,7 +180,7 @@ def make_Bpow():
     Bpow = list()
     for i in range(253):
         Bpow.append(P)
-        P = edwards_double(P)
+        P = edwards_double(P=P)
     return Bpow
 
 
@@ -195,7 +196,7 @@ def scalarmult_B(e):
     P = IDENT
     for i in range(253):
         if e & 1:
-            P = edwards_add(P, Bpow[i])
+            P = edwards_add(P=P, Q=Bpow[i])
         e //= 2
     assert e == 0, e
     return P
@@ -204,15 +205,16 @@ def scalarmult_B(e):
 def scalarmult(P, e):
     if e == 0:
         return IDENT
-    Q = scalarmult(P, e // 2)
-    Q = edwards_double(Q)
+    Q = scalarmult(P=P, e=e//2)
+    Q = edwards_double(P=Q)
     if e & 1:
-        Q = edwards_add(Q, P)
+        Q = edwards_add(P=Q, Q=P)
     return Q
 
 
 def isoncurve(P):
     (x, y, z, t) = P
+    # x*y==z*t, y^2+D*t^2==x^2+z^2
     return (z % PRIME != 0 and
             x * y % PRIME == z * t % PRIME and
             (y * y - x * x - z * z - D * t * t) % PRIME == 0)
@@ -226,20 +228,10 @@ def encodepoint(P):
     if x & 1 == 1:
         y += 2**255
     return int(y).to_bytes(B//8, 'little')
-    # bits = [(y >> i) & 1 for i in range(B - 1)] + [x & 1]
-    # return b''.join([
-    #        int2byte(sum([bits[i * 8 + j] << j for j in range(8)]))
-    #        for i in range(B // 8)
-    #    ])
 
 
 def encodeint(y):
     return int(y).to_bytes(B//8, 'little')
-    # bits = [(y >> i) & 1 for i in range(B)]
-    # return b''.join([
-    #        int2byte(sum([bits[i * 8 + j] << j for j in range(8)]))
-    #        for i in range(B // 8)
-    #    ])
 
 
 def decodepoint(s):
@@ -257,7 +249,6 @@ def decodepoint(s):
 
 
 def decodeint(s):
-    # return sum(2 ** i * bit(s, i) for i in range(0, B))
     return int.from_bytes(s[:B], 'little')
 
 

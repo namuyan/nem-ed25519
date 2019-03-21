@@ -21,6 +21,7 @@ setup(
     author='namuyan',
     description='Encryption modules applied to NEM.',
     long_description=readme,
+    long_description_content_type='text/markdown',
     packages=find_packages(),
     license="MIT Licence",
     install_requires=['pycryptodomex', 'pysha3', 'gmpy2'],
