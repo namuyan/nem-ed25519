@@ -23,7 +23,8 @@ def sign(msg, sk, pk):
     r = Hint_hash(m_raw)
 
     R = scalarmult_B(r)
-    S = (r + Hint_hash(encodepoint(R) + pk + msg) * a) % L
+    k = Hint_hash(encodepoint(R) + pk + msg)
+    S = (r + k * a) % L
     return encodepoint(R) + encodeint(S)
 
 

@@ -52,16 +52,15 @@ D = -121665 * inverse(121666) % PRIME
 num_minus_1 = qdiv(-1)
 num_0 = qdiv(0)
 num_1 = qdiv(1)
+num_2 = qdiv(2)
 num_d = qdiv(D)
-num_prime = qdiv(PRIME)
-num_prime_minus_2 = qdiv(PRIME - 2)
 
 
 def _inner(px, py, qx, qy):
     base_x = num_1 + num_d * px * qx * py * qy
     base_y = num_1 - num_d * px * qx * py * qy
-    x = (px * qy + qx * py) * powmod(base_x, num_prime_minus_2, num_prime)
-    y = (py * qy + px * qx) * powmod(base_y, num_prime_minus_2, num_prime)
+    x = (px * qy + qx * py) * inverse(base_x)
+    y = (py * qy + px * qx) * inverse(base_y)
     return x % PRIME, y % PRIME
 
 
@@ -99,14 +98,14 @@ def edwards_add(P, Q):
 
     # a = (y1 - x1) * (y2 - x2) % PRIME
     # b = (y1 + x1) * (y2 + x2) % PRIME
-    c = t1 * 2 * D * t2 % PRIME
-    dd = z1 * 2 * z2 % PRIME
+    c = t1 * num_2 * D * t2 % PRIME
+    dd = z1 * num_2 * z2 % PRIME
     # e = b - a
-    e = 2 * (y1*x2 + x1*y2) % PRIME
+    e = num_2 * (y1*x2 + x1*y2) % PRIME
     f = dd - c
     g = dd + c
     # h = b + a
-    h = 2 * (y1*y2 + x1*x2) % PRIME
+    h = num_2 * (y1*y2 + x1*x2) % PRIME
     x3 = e * f
     y3 = g * h
     t3 = e * h
@@ -119,11 +118,11 @@ def edwards_double(P):
     # http://www.hyperelliptic.org/EFD/g1p/auto-twisted-extended-1.html
     x1, y1, z1, t1 = P
 
-    a = x1 ** 2 % PRIME
-    b = y1 ** 2 % PRIME
-    c = 2 * (z1 ** 2) % PRIME
+    a = x1 ** num_2 % PRIME
+    b = y1 ** num_2 % PRIME
+    c = num_2 * (z1 ** num_2) % PRIME
     # dd = -a
-    e = ((x1 + y1) ** 2 - a - b) % PRIME
+    e = ((x1 + y1) ** num_2 - a - b) % PRIME
     g = -a + b  # dd + b
     f = g - c
     h = -a - b  # dd - b
