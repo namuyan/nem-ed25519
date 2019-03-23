@@ -15,7 +15,7 @@ Please look [test codes folder.](test)
 Install
 ------
 install from specific branch **rust-ver**
-```commandline
+```bash
 pip3 install --user git+https://github.com/namuyan/nem-ed25519@rust-ver
 ```
 
@@ -46,7 +46,7 @@ dec = decrypt(sk=sk1, pk=pk, enc=enc)
 
 warning: delete **Encryption** class
 
-bebch
+bench
 ----
 | action  | master | rust-ver | times | 
 | ----    | ----   | ----     | ----   |

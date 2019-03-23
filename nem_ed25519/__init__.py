@@ -62,6 +62,14 @@ class Encrypt(object):
         sk, pk = nem_ed25519_rust.generate_keypair()
         return cls(your_sk=sk, other_pk=other_pk)
 
+    @property
+    def sk(self):
+        return self.your_sk.hex()
+
+    @property
+    def pk(self):
+        return public_key(sk=self.your_sk)
+
     def sign(self, msg, encode=bytes):
         return sign(msg=msg, sk=self.your_sk, encode=encode)
 
