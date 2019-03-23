@@ -1,8 +1,4 @@
-#!/user/env python3
-# -*- coding: utf-8 -*-
-
-from os import urandom
-from .utils import *
+from sha3 import keccak_256
 from binascii import hexlify, unhexlify
 from Cryptodome.Hash import RIPEMD160
 from base64 import b32decode, b32encode
@@ -13,27 +9,6 @@ def encoder(data, encode):
         return hexlify(data).decode()
     else:
         return data
-
-
-def secret_key(seed=None, encode=str):
-    if seed is None:
-        seed = urandom(32)
-    assert isinstance(seed, bytes), 'seed is byte or None.'
-    h = to_hash(seed)
-    i = as_key(h)
-    k = to_bytes(i)
-    return encoder(data=k, encode=encode)
-
-
-def public_key(sk, encode=str):
-    if isinstance(sk, str):
-        sk = unhexlify(sk.encode())
-    assert len(sk) == 32, 'SK is 32bytes. {}'.format(len(sk))
-    h = to_hash(sk[::-1])
-    k = as_key(h)
-    c = outer(B_POINT, k)
-    p = point_to_bytes(c)
-    return encoder(data=p, encode=encode)
 
 
 def get_address(pk, main_net=True, prefix=None):

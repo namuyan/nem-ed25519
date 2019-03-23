@@ -16,7 +16,7 @@ def _requires_from_file(filename):
 
 setup(
     name="nem_ed25519",
-    version='0.0.11',
+    version='0.1.0',
     url='https://github.com/namuyan/nem-ed25519',
     author='namuyan',
     description='Encryption modules applied to NEM.',
@@ -24,7 +24,7 @@ setup(
     long_description_content_type='text/markdown',
     packages=find_packages(),
     license="MIT Licence",
-    install_requires=['pycryptodomex', 'pysha3', 'gmpy2'],
+    install_requires=['pycryptodomex', 'nem-ed25519-rust', 'pysha3'],
     classifiers=[
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.5',

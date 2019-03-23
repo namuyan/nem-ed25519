@@ -1,7 +1,7 @@
 #!/user/env python3
 # -*- coding: utf-8 -*-
 
-from nem_ed25519.key import secret_key, public_key, get_address
+from nem_ed25519 import secret_key, public_key, get_address
 from multiprocessing import Process, Queue
 import time
 
@@ -50,7 +50,7 @@ def _process(que, number, request, main_net, prefix):
         if request in ck:
             que.put((True, sk, pk, ck))
             exit(1)
-        elif count % 100 == 0:
+        elif count % 1000 == 0:
             que.put((False, number, count))
             count = 0
 
