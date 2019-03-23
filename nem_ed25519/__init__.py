@@ -23,13 +23,13 @@ def sign(msg, sk, encode=bytes):
     return encoder(data=sig, encode=encode)
 
 
-def verify(msg, sig, pk):
+def verify(msg, sign, pk):
     assert isinstance(msg, bytes)
-    if isinstance(sig, str):
-        sig = a2b_hex(sig)
+    if isinstance(sign, str):
+        sign = a2b_hex(sign)
     if isinstance(pk, str):
         pk = a2b_hex(pk)
-    nem_ed25519_rust.verify(msg, sig, pk)
+    nem_ed25519_rust.verify(msg, sign, pk)
 
 
 def encrypt(sk, pk, msg, encode=bytes):
@@ -66,7 +66,7 @@ class Encrypt(object):
         return sign(msg=msg, sk=self.your_sk, encode=encode)
 
     def verify(self, msg, sig):
-        return verify(msg=msg, sig=sig, pk=self.other_pk)
+        return verify(msg=msg, sign=sig, pk=self.other_pk)
 
     def encrypt(self, msg, encode=bytes):
         return encrypt(sk=self.your_sk, pk=self.other_pk, msg=msg, encode=encode)

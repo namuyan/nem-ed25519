@@ -34,7 +34,7 @@ from nem_ed25519 import sign, verify
 # sign message
 sign = sign(msg=b'hello world', sk=sk)
 # verify message
-verify(msg=b'hello world', sig=sign, pk=pk)
+verify(msg=b'hello world', sign=sign, pk=pk)
  
 from nem_ed25519 import encrypt, decrypt
 # encrypt/decrypt message
