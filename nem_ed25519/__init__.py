@@ -1,4 +1,4 @@
-from .key import encoder, get_address, dummy_address, is_address, convert_address
+from .key import *
 from binascii import a2b_hex
 import nem_ed25519_rust
 
@@ -95,4 +95,9 @@ __all__ = [
     "dummy_address",
     "is_address",
     "convert_address",
+    "get_ek",
+    "dummy_ek",
+    "decode_ek",
+    "convert_ek",
+    "is_ek",
 ]

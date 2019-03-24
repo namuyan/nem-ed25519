@@ -22,13 +22,16 @@ pip3 install --user git+https://github.com/namuyan/nem-ed25519@rust-ver
 Samples1
 ------
 ```python
-from nem_ed25519 import secret_key, public_key, get_address
+from nem_ed25519 import *
 # secret key
 sk = secret_key()
 # public key
 pk = public_key(sk)
 # compressed key
 ck = get_address(pk, main_net=True)
+# encoded key
+ek = get_ek(pk, prefix=b'\x00')
+pk_copy = decode_ek(ek)
  
 from nem_ed25519 import sign, verify
 # sign message
