@@ -74,13 +74,13 @@ class Encrypt(object):
         return sign(msg=msg, sk=self.your_sk, encode=encode)
 
     def verify(self, msg, sig):
-        return verify(msg=msg, sign=sig, pk=self.other_pk)
+        verify(msg=msg, sign=sig, pk=self.other_pk)
 
     def encrypt(self, msg, encode=bytes):
         return encrypt(sk=self.your_sk, pk=self.other_pk, msg=msg, encode=encode)
 
     def decrypt(self, enc):
-        decrypt(sk=self.your_sk, pk=self.other_pk, enc=enc)
+        return decrypt(sk=self.your_sk, pk=self.other_pk, enc=enc)
 
 
 __all__ = [
