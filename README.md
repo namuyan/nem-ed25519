@@ -56,14 +56,18 @@ enc = encrypt(sk=sk, pk=pk1, msg=b'Hot potato.')
 dec = decrypt(sk=sk1, pk=pk, enc=enc)
 ```
 
-Samples2
---------
-Import setting at first, and you can select encode mode.  
-Please look at [allinone.py](test/allinone.py)
-```python
-from nem_ed25519.base import Encryption
-ecc = Encryption()
-```
+bench
+----
+| branch name      | master  | pure    | rust-ver |
+| ----             | ----    | ----    | ----     |
+| address generate | 5.8mS   | 98.2mS  | 0.045mS  |
+| sign/verify      | 3.211mS | 34mS    | 0.13mS   |
+| encrypt/decrypt  | 2.92mS  | 20mS    | 0.246mS  |
+
+* [master](https://github.com/namuyan/nem-ed25519)
+* [rust-ver](https://github.com/namuyan/nem-ed25519/tree/rust-ver)
+* [pure python](https://github.com/namuyan/nem-ed25519/tree/pure)
+
 
 Author
 ------
