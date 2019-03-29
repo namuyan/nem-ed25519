@@ -1,4 +1,4 @@
-from nem_ed25519.key import secret_key, public_key, get_address, dummy_address, is_address
+from nem_ed25519 import secret_key, public_key, get_address, dummy_address, is_address
 import time
 import cProfile
 

@@ -1,7 +1,7 @@
 import os
 import time
 
-from nem_ed25519.encrypt import encrypt, decrypt
+from nem_ed25519 import encrypt, decrypt
 
 sk0 = '78f8932df54d22319a16dc4940c269205ae0946f98d38ef30aea488a47426153'
 pk0 = '77041bfb4b6afebc31aaab7b02d68e577fe069524b3c661c804b42ef381f717b'

@@ -1,6 +1,6 @@
 import os
 from time import time
-from nem_ed25519.signature import sign, verify
+from nem_ed25519 import sign, verify
 import cProfile
 
 sk = '78f8932df54d22319a16dc4940c269205ae0946f98d38ef30aea488a47426153'

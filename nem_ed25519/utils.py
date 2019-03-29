@@ -238,16 +238,6 @@ def decodeint(s):
     return int.from_bytes(s[:B], 'little')
 
 
-def pad(s):
-    pad = 32 - len(s) % 32
-    add = 32 - len(s) % 32
-    return s + add * pad.to_bytes(1, 'big')
-
-
-def unpad(s):
-    return s[:-ord(s[len(s) - 1:])]
-
-
 def recover(y):
     """ given a value y, recover the preimage x """
     p = (y*y - 1) * inverse(D*y*y + 1)

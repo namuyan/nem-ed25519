@@ -1,7 +1,7 @@
 #!/user/env python3
 # -*- coding: utf-8 -*-
 
-from nem_ed25519.key import secret_key, public_key, get_address
+from nem_ed25519 import secret_key, public_key, get_address
 from multiprocessing import Process, Queue
 import time
 
