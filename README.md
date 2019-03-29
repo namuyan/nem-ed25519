@@ -56,14 +56,7 @@ enc = encrypt(sk=sk, pk=pk1, msg=b'Hot potato.')
 dec = decrypt(sk=sk1, pk=pk, enc=enc)
 ```
 
-Samples2
---------
-Import setting at first, and you can select encode mode.  
-Please look at [allinone.py](test/allinone.py)
-```python
-from nem_ed25519.base import Encryption
-ecc = Encryption()
-```
+warning: delete **Encryption** class
 
 Author
 ------
