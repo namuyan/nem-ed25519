@@ -17,7 +17,7 @@ def encrypt(sk, pk, msg):
     pk = unhexlify(pk.encode())
 
     h = to_hash(sk)
-    a = 2 ** (B - 2) + sum(2 ** i * bit(h, i) for i in range(3, B - 2))
+    a = 2**(B - 2) + sum(2**i * bit(h, i) for i in range(3, B - 2))
     A = decodepoint(pk)
     g = encodepoint(scalarmult(A, a))
     salt = urandom(32)
@@ -40,7 +40,7 @@ def decrypt(sk, pk, enc):
 
     salt, iv, encrypted_msg = enc[:32], enc[32:32 + 16], enc[32 + 16:]
     h = to_hash(sk)
-    a = 2 ** (B - 2) + sum(2 ** i * bit(h, i) for i in range(3, B - 2))
+    a = 2**(B - 2) + sum(2**i * bit(h, i) for i in range(3, B - 2))
     A = decodepoint(pk)
     g = encodepoint(scalarmult(A, a))
     key_int = int.from_bytes(g, 'big') ^ int.from_bytes(salt, 'big')
@@ -48,4 +48,3 @@ def decrypt(sk, pk, enc):
     cipher = AES.new(shared_key, AES.MODE_CBC, iv)
     decrypt = cipher.decrypt(encrypted_msg)
     return unpad(decrypt)
-

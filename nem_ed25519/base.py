@@ -1,6 +1,5 @@
 #!/user/env python3
 # -*- coding: utf-8 -*-
-
 """
 this code is a cleaned version of http://ed25519.cr.yp.to/python/ed25519.py for python3
 
@@ -43,6 +42,7 @@ def decoding(data):
 
 
 class Encryption:
+
     def __init__(self, main_net=True, prefix=None):
         self.main_net = main_net
         self.prefix = prefix
