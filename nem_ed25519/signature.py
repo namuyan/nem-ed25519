@@ -1,8 +1,5 @@
-#!/user/env python3
-# -*- coding: utf-8 -*-
-
 from binascii import unhexlify
-from .utils import *
+from nem_ed25519.utils import *
 
 
 def sign(msg, sk, pk):

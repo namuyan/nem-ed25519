@@ -1,10 +1,7 @@
-#!/user/env python3
-# -*- coding: utf-8 -*-
-
 from binascii import unhexlify
 from os import urandom
 from Cryptodome.Cipher import AES
-from .utils import *
+from nem_ed25519.utils import *
 
 
 def encrypt(sk, pk, msg):

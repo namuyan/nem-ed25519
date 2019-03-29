@@ -1,25 +1,21 @@
-#!/user/env python3
-# -*- coding: utf-8 -*-
-
+from nem_ed25519.python_sha3 import sha3_256, sha3_512
 from collections import namedtuple
 from operator import getitem
-from sha3 import keccak_256, keccak_512
-from gmpy2 import powmod, qdiv
 
 Point = namedtuple('Point', ['x', 'y'])
 KEY_MASK = int.from_bytes(b'\x3F' + b'\xFF'*30 + b'\xF8', 'big', signed=False)
 B = 256
-PRIME = qdiv(2**255 - 19)
-L = qdiv(2**252 + 27742317777372353535851937790883648493)
-IDENT = (qdiv(0), qdiv(1), qdiv(1), qdiv(0))
+PRIME = 2**255 - 19
+L = 2**252 + 27742317777372353535851937790883648493
+IDENT = (0, 1, 1, 0)
 
 
 def to_hash(m):
-    return keccak_512(m).digest()
+    return sha3_512(m).digest()
 
 
 def to_hash_sha3_256(m):
-    return keccak_256(m).digest()
+    return sha3_256(m).digest()
 
 
 def to_bytes(i):
@@ -44,29 +40,23 @@ def point_to_bytes(P):
 
 
 def inverse(x):
-    return powmod(x, PRIME - 2, PRIME)
+    return pow(x, PRIME - 2, PRIME)
 
 
 D = -121665 * inverse(121666) % PRIME
 
-num_minus_1 = qdiv(-1)
-num_0 = qdiv(0)
-num_1 = qdiv(1)
-num_2 = qdiv(2)
-num_d = qdiv(D)
-
 
 def _inner(px, py, qx, qy):
-    base_x = num_1 + num_d*px*qx*py*qy
-    base_y = num_1 - num_d*px*qx*py*qy
+    base_x = 1 + D*px*qx*py*qy
+    base_y = 1 - D*px*qx*py*qy
     x = (px*qy + qx*py) * inverse(base_x)
     y = (py*qy + px*qx) * inverse(base_y)
     return x % PRIME, y % PRIME
 
 
 def _outer(px, py, n):
-    if n == num_0:
-        return num_0, num_1
+    if n == 0:
+        return 0, 1
     qx, qy = _outer(px, py, n // 2)
     qx, qy = _inner(qx, qy, qx, qy)
     if n & 1:
@@ -75,8 +65,8 @@ def _outer(px, py, n):
 
 
 def outer(P, n):
-    qx, qy = _outer(qdiv(P.x), qdiv(P.y), qdiv(n))
-    return Point(int(qx.digits()), int(qy.digits()))
+    qx, qy = _outer(P.x, P.y, n)
+    return Point(qx, qy)
 
 
 def bit(h, i):
@@ -84,7 +74,7 @@ def bit(h, i):
 
 
 def Hint_hash(m):
-    h = keccak_512(m).digest()
+    h = sha3_512(m).digest()
     # return sum(2 ** i * bit(h, i) for i in range(2 * B))
     # sum(2 ** i * bit(h, i) for i in range(0, 512)) == int.from_bytes(h, 'little')
     return int.from_bytes(h, 'little')
@@ -98,14 +88,14 @@ def edwards_add(P, Q):
 
     # a = (y1 - x1) * (y2 - x2) % PRIME
     # b = (y1 + x1) * (y2 + x2) % PRIME
-    c = t1 * num_2 * D * t2 % PRIME
-    dd = z1 * num_2 * z2 % PRIME
+    c = t1 * 2 * D * t2 % PRIME
+    dd = z1 * 2 * z2 % PRIME
     # e = b - a
-    e = num_2 * (y1*x2 + x1*y2) % PRIME
+    e = 2 * (y1*x2 + x1*y2) % PRIME
     f = dd - c
     g = dd + c
     # h = b + a
-    h = num_2 * (y1*y2 + x1*x2) % PRIME
+    h = 2 * (y1*y2 + x1*x2) % PRIME
     x3 = e * f
     y3 = g * h
     t3 = e * h
@@ -118,11 +108,11 @@ def edwards_double(P):
     # http://www.hyperelliptic.org/EFD/g1p/auto-twisted-extended-1.html
     x1, y1, z1, t1 = P
 
-    a = x1**num_2 % PRIME
-    b = y1**num_2 % PRIME
-    c = num_2 * (z1**num_2) % PRIME
+    a = x1**2 % PRIME
+    b = y1**2 % PRIME
+    c = 2 * (z1**2) % PRIME
     # dd = -a
-    e = ((x1 + y1)**num_2 - a - b) % PRIME
+    e = ((x1 + y1)**2 - a - b) % PRIME
     g = -a + b  # dd + b
     f = g - c
     h = -a - b  # dd - b
@@ -135,7 +125,7 @@ def edwards_double(P):
 
 def pow2(x, p):
     """== pow(x, 2**p, q)"""
-    return powmod(x, 2**p, PRIME)
+    return pow(x, 2**p, PRIME)
     # while p > 0:
     #    x = x * x % PRIME
     #    p -= 1
@@ -145,7 +135,6 @@ def pow2(x, p):
 def inv(z):
     """$= z^{-1} \mod q$, for z != 0"""
     # Adapted from curve25519_athlon.c in djb's Curve25519.
-    z = qdiv(z)
     z2 = z * z % PRIME  # 2
     z9 = pow2(z2, 2) * z % PRIME  # 9
     z11 = z9 * z2 % PRIME  # 11
@@ -162,10 +151,10 @@ def inv(z):
 
 def xrecover(y):
     xx = (y*y - 1) * inv(D*y*y + 1)
-    x = powmod(xx, (PRIME+3) // 8, PRIME)
+    x = pow(xx, (PRIME+3) // 8, PRIME)
 
     if (x*x - xx) % PRIME != 0:
-        I = powmod(2, (PRIME-1) // 4, PRIME)
+        I = pow(2, (PRIME-1) // 4, PRIME)
         x = (x*I) % PRIME
 
     if x % 2 != 0:
@@ -176,7 +165,7 @@ def xrecover(y):
 def make_Bpow():
     By = 4 * inv(5)
     Bx = xrecover(By)
-    P = (Bx % PRIME, By % PRIME, qdiv(1), (Bx*By) % PRIME)
+    P = (Bx % PRIME, By % PRIME, 1, (Bx*By) % PRIME)
     Bpow = list()
     for i in range(253):
         Bpow.append(P)
@@ -236,11 +225,10 @@ def decodepoint(s):
     # bytes to Point
     # y = sum(2 ** i * bit(s, i) for i in range(0, B - 1))
     y = decodeint(s) - 2**255 * bit(s, 255)
-    y = qdiv(y)
     x = xrecover(y)
     if x & 1 != bit(s, B - 1):
         x = PRIME - x
-    P = (x, y, qdiv(1), (x*y) % PRIME)
+    P = (x, y, 1, (x*y) % PRIME)
     if not isoncurve(P):
         raise ValueError("decoding point that is not on curve")
     return P
@@ -263,9 +251,9 @@ def unpad(s):
 def recover(y):
     """ given a value y, recover the preimage x """
     p = (y*y - 1) * inverse(D*y*y + 1)
-    x = powmod(p, (PRIME+3) // 8, PRIME)
+    x = pow(p, (PRIME+3) // 8, PRIME)
     if (x*x - p) % PRIME != 0:
-        i = powmod(2, (PRIME-1) // 4, PRIME)
+        i = pow(2, (PRIME-1) // 4, PRIME)
         x = (x*i) % PRIME
     if x % 2 != 0:
         x = PRIME - x

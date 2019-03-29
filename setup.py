@@ -24,7 +24,7 @@ setup(
     long_description_content_type='text/markdown',
     packages=find_packages(),
     license="MIT Licence",
-    install_requires=['pycryptodomex', 'pysha3', 'gmpy2'],
+    install_requires=['pycryptodomex'],
     classifiers=[
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.5',
