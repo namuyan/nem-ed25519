@@ -1,4 +1,4 @@
-nem-ed25519
+nem-ed25519(pure Python ver)
 ===========
 NEM implementation ed26619 encryption modules for Python.  
 NEM use Keccak hash function, not same SHA3.
@@ -47,11 +47,15 @@ warning: delete **Encryption** class
 
 bench
 ----
-| action  | master | pure |
-| ----    | ----   | ----     |
-|address generate | 5.8mS | 98.2mS |
-|sign/verify | 3.211mS | 34mS |
-|encrypt/decrypt | 2.92mS | 20mS |
+| branch name      | master  | pure    | rust-ver |
+| ----             | ----    | ----    | ----     |
+| address generate | 5.8mS   | 98.2mS  | 0.045mS  |
+| sign/verify      | 3.211mS | 34mS    | 0.13mS   |
+| encrypt/decrypt  | 2.92mS  | 20mS    | 0.246mS  |
+
+* [master](https://github.com/namuyan/nem-ed25519)
+* [rust-ver](https://github.com/namuyan/nem-ed25519/tree/rust-ver)
+* [pure python](https://github.com/namuyan/nem-ed25519/tree/pure)
 
 Author
 ------
