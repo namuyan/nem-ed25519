@@ -51,11 +51,15 @@ warning: delete **Encryption** class
 
 bench
 ----
-| action  | master | rust-ver | times | 
-| ----    | ----   | ----     | ----   |
-|address generate | 5.8mS | 0.045mS | 128 |
-|sign/verify | 3.211mS | 0.13mS | 24 |
-|encrypt/decrypt | 2.92mS | 0.246uS | 12 |
+| branch name      | master  | pure    | rust-ver |
+| ----             | ----    | ----    | ----     |
+| address generate | 5.8mS   | 98.2mS  | 0.045mS  |
+| sign/verify      | 3.211mS | 34mS    | 0.13mS   |
+| encrypt/decrypt  | 2.92mS  | 20mS    | 0.246mS  |
+
+* [master](https://github.com/namuyan/nem-ed25519)
+* [rust-ver](https://github.com/namuyan/nem-ed25519/tree/rust-ver)
+* [pure python](https://github.com/namuyan/nem-ed25519/tree/pure)
 
 Author
 ------
